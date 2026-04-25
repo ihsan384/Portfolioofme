@@ -891,7 +891,12 @@ body::before {
   height: 22px;
 }
 
-.contact-email,
+.contact-email a{
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  
+}
 .contact-location {
   color: var(--text-secondary);
   font-size: 1rem;
