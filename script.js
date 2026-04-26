@@ -419,31 +419,17 @@ function initContactForm() {
       const message = messageInput.value;
 
       form.reset();
-
-      const whatsappMsg = `Hi Ihsan 👋
-
-Name: ${name}
-Message: ${message}
-
-I just submitted your website form.`;
-
-      const url = `https://wa.me/919497013275?text=${encodeURIComponent(whatsappMsg)}`;
-
-      window.open(url, "_blank");
-    })
-    .catch((error) => {
+      alert(`Thank you, ${name}! Your message has been sent successfully.`);
+    }, (error) => {
       submitBtn.classList.remove('sending');
       submitBtn.disabled = false;
-      alert("Failed: " + error.text);
-      console.error(error);
+      alert('An error occurred while sending your message. Please try again later.');
     });
-});
-
-  // Real-time validation on blur
-  [nameInput, emailInput, messageInput].forEach(input => {
-    input.addEventListener('blur', validate);
   });
 }
+
+      
+
 
 /* ============================================
    Cursor Glow Effect
