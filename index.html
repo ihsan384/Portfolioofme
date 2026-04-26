@@ -10,16 +10,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
   
   <!-- Styles -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Particle Background -->
-  <canvas id="particleCanvas" class="particle-canvas" aria-hidden="true"></canvas>
+  
   
   <!-- Cursor Glow Effect -->
-  <div class="cursor-glow" id="cursorGlow"></div>
+  
   
   <!-- Scroll Progress Indicator -->
   <div class="scroll-progress" id="scrollProgress"></div>
@@ -68,7 +70,7 @@
         >
       </div>
       
-      <h1 class="hero-name" data-hero="name">Ihsan A</h1>
+      <h1 class="hero-name" data-hero="name">Ihsan <span>A</span></h1>
       <p class="hero-title" data-hero="title">Freelance Website Developer </p>
       <p class="hero-typing" data-hero="typing">
         <span class="typing-text"></span>
@@ -80,11 +82,13 @@
         <a href="#contact" class="btn btn-secondary btn-magnetic">Contact Me</a>
       </div>
     </div>
+    <div class="scroll-indicator">
+  
+
+  <span class="scroll-text">Scroll to explore</span>
+</div>
     
-    <div class="scroll-indicator" data-hero="scroll">
-      <span>Scroll</span>
-      <div class="scroll-line"></div>
-    </div>
+
   </section>
   
   <!-- About Section -->

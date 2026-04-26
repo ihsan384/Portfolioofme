@@ -557,3 +557,7 @@ function initYear() {
     yearEl.textContent = new Date().getFullYear();
   }
 }
+window.addEventListener("scroll", () => {
+  const indicator = document.querySelector(".scroll-indicator");
+  indicator.style.opacity = window.scrollY > 50 ? "0" : "0.8";
+});
