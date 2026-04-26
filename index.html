@@ -26,10 +26,7 @@
   <div class="scroll-progress" id="scrollProgress"></div>
   
   <!-- Theme Toggle -->
-  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-    <span class="theme-icon sun">☀️</span>
-    <span class="theme-icon moon">🌙</span>
-  </button>
+  
   
   <!-- Navigation -->
   <nav class="navbar" id="navbar">
@@ -41,6 +38,10 @@
         <li><a href="#projects">Projects</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <span class="theme-icon sun">☀️</span>
+    <span class="theme-icon moon">🌙</span>
+  </button>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
         <span></span>
         <span></span>
@@ -96,8 +97,9 @@
       <h2 class="section-title" data-animate>About Me</h2>
       <div class="about-content" data-animate>
         <div class="about-text">
-          <p>I'm a freelancing software developer experience of building elegant, performant applications. I specialize in crafting user-centric solutions that merge technical excellence with thoughtful design.</p>
-          <p>When I'm not coding, you'll find me contributing to open-source projects, writing technical articles, or exploring the latest in web technologies. I believe in continuous learning and pushing the boundaries of what's possible on the web.</p>
+          <p class="about-lead">I build <span class="highlight">clean, responsive websites</span> that help ideas feel polished, fast, and easy to use.</p>
+          <p class="about-support">As a freelance website developer, I focus on practical interfaces with strong structure, thoughtful details, and reliable front-end execution.</p>
+          <p class="about-support">I keep improving through real projects, open-source exploration, and a steady curiosity for modern web technologies.</p>
         </div>
         <div class="about-stats">
           <div class="stat-item">
@@ -124,48 +126,66 @@
       <div class="skills-grid">
         <!-- Core Skills -->
         <div class="skill-card" data-animate>
-          <div class="skill-icon">📄</div>
+          <div class="skill-icon-box">
+            <img class="skill-icon" src="assets/html.png" alt="HTML5" />
+          </div>
           <h3>HTML5</h3>
           <p class="skill-level">Advanced</p>
         </div>
         <div class="skill-card" data-animate>
-          <div class="skill-icon">🎨</div>
+          <div class="skill-icon-box">
+            <img class="skill-icon" src="assets/css.png" alt="CSS3" />
+          </div>
           <h3>CSS3</h3>
           <p class="skill-level">Advanced</p>
         </div>
         <div class="skill-card" data-animate>
-          <div class="skill-icon">⚡</div>
+          <div class="skill-icon-box">
+            <img class="skill-icon" src="assets/js.png" alt="JavaScript" />
+              </div>
           <h3>JavaScript</h3>
           <p class="skill-level">Advanced</p>
         </div>
         <div class="skill-card" data-animate>
-          <div class="skill-icon">🐍</div>
+          <div class="skill-icon-box">
+            <img class="skill-icon" src="assets/python.png" alt="Python" />
+          </div>
           <h3>Python</h3>
           <p class="skill-level">Intermediate</p>
         </div>
         <div class="skill-card" data-animate>
-          <div class="skill-icon">🗄️</div>
+          <div class="skill-icon-box">
+            <img class="skill-icon" src="assets/sql.png" alt="SQL" />
+              </div>
           <h3>SQL & Databases</h3>
           <p class="skill-level">Intermediate</p>
         </div>
         <div class="skill-card" data-animate>
-          <div class="skill-icon">🟣</div>
+          <div class="skill-icon-box">
+            <img class="skill-icon" src="assets/kotlin.png" alt="Kotlin" />
+          </div>
           <h3>Kotlin</h3>
           <p class="skill-level">Intermediate</p>
         </div>
         <!-- Currently Learning -->
         <div class="skill-card" data-animate>
-          <div class="skill-icon">⚛️</div>
+          <div class="skill-icon-box">
+            <img class="skill-icon" src="assets/react.png" alt="React" />
+          </div>
           <h3>React</h3>
           <p class="skill-level">Learning</p>
         </div>
         <div class="skill-card" data-animate>
-          <div class="skill-icon">🔧</div>
+          <div class="skill-icon-box">
+            <img class="skill-icon" src="assets/backend.png" alt="Backend Development" />
+          </div>
           <h3>Backend Development</h3>
           <p class="skill-level">Learning</p>
         </div>
         <div class="skill-card" data-animate>
-          <div class="skill-icon">🚀</div>
+          <div class="skill-icon-box">
+            <img class="skill-icon" src="assets/advanced-js.png" alt="Advanced JS Concepts" />
+          </div>
           <h3>Advanced JS Concepts</h3>
           <p class="skill-level">Learning</p>
         </div>
