@@ -409,36 +409,34 @@ function initContactForm() {
 
   submitBtn.classList.add('sending');
   submitBtn.disabled = true;
-  import { supabase } from './supabase.js';
 
-form.addEventListener('submit', async function(e) {
-  e.preventDefault();
+  emailjs.sendForm("service_2whqhpi", "template_0bej7iq", form)
+    .then(() => {
+      submitBtn.classList.remove('sending');
+      submitBtn.disabled = false;
 
-  if (!validate()) return;
+      const name = nameInput.value;
+      const message = messageInput.value;
 
-  submitBtn.classList.add('sending');
-  submitBtn.disabled = true;
+      form.reset();
 
-  const { error } = await supabase
-    .from('messages')
-    .insert([{
-      name: nameInput.value,
-      email: emailInput.value,
-      message: messageInput.value
-    }]);
+      const whatsappMsg = `Hi Ihsan 👋
 
-  submitBtn.classList.remove('sending');
-  submitBtn.disabled = false;
+Name: ${name}
+Message: ${message}
 
-  if (error) {
-    alert("Error sending message");
-    console.error(error);
-  } else {
-    alert("Message stored successfully");
-    form.reset();
-  }
-});
-  
+I just submitted your website form.`;
+
+      const url = `https://wa.me/919497013275?text=${encodeURIComponent(whatsappMsg)}`;
+
+      window.open(url, "_blank");
+    })
+    .catch((error) => {
+      submitBtn.classList.remove('sending');
+      submitBtn.disabled = false;
+      alert("Failed: " + error.text);
+      console.error(error);
+    });
 });
 
   // Real-time validation on blur
