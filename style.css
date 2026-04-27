@@ -1327,6 +1327,9 @@ body::before {
   .hero-content {
     max-width: 1000px;
   }
+  .about-support {
+    font-size: 1.12rem;
+  }
 }
 .section-title {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
@@ -1338,6 +1341,7 @@ body::before {
   transform: translateY(20px);
   animation: fadeUp 0.8s ease forwards;
 }
+
 
 @keyframes fadeUp {
   to {
