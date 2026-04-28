@@ -167,12 +167,10 @@ body::before {
 
 /* Theme Toggle */
 .theme-toggle {
-  position: absolute; /* not fixed */
-  top: 90px; /* just below navbar */
-  right: 24px;
-
-  width: 44px;
-  height: 44px;
+  position: static; /* not fixed */
+  
+  width: 40px;
+  height: 40px;
 
   border-radius: 50%;
   border: 1px solid var(--border-color);
@@ -182,8 +180,10 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: 0.3s ease;
 
-  z-index: 50; /* below navbar */
+  
 }
 
 .theme-toggle:hover {
@@ -196,7 +196,12 @@ body::before {
   font-size: 20px;
   transition: opacity var(--transition-smooth), transform var(--transition-smooth);
 }
-
+@media (hover: none) {
+  .theme-toggle:hover {
+    background: none;
+    transform: none;
+  }
+}
 .theme-icon.moon { opacity: 1; }
 .theme-icon.sun { opacity: 0; }
 
@@ -291,6 +296,11 @@ body::before {
   height: 2px;
   background: var(--text-primary);
   transition: all var(--transition-smooth);
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 /* Hero Section */

@@ -624,3 +624,8 @@ document.querySelectorAll('.skill-card').forEach(card => {
     card.style.setProperty('--y', `${e.clientY - rect.top}px`);
   });
 });
+document.querySelectorAll('.btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    console.log("CTA clicked:", btn.textContent);
+  });
+});
