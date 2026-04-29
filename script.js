@@ -749,3 +749,16 @@ document.querySelectorAll(".btn").forEach((btn) => {
     console.log("CTA clicked:", btn.textContent);
   });
 });
+let clickCount = 0;
+
+document.getElementById('logo').addEventListener('click', () => {
+  clickCount++;
+
+  if (clickCount === 3) {
+    window.location.href = '/admin/index.html';
+  }
+
+  setTimeout(() => {
+    clickCount = 0;
+  }, 800);
+});
