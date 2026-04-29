@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Deep analytics — visitor trends, device and country breakdown" />
+  <title>Analytics — Portfolio Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="sidebar-logo">
+          <div class="logo-icon">P</div>
+          <span>Portfolio Admin</span>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item" id="nav-dashboard"><span class="nav-glyph">D</span>Dashboard</a>
+        <a href="visitors.html" class="nav-item" id="nav-visitors"><span class="nav-glyph">V</span>Visitors</a>
+        <a href="messages.html" class="nav-item" id="nav-messages"><span class="nav-glyph">M</span>Messages</a>
+        <a href="analytics.html" class="nav-item active" id="nav-analytics"><span class="nav-glyph">A</span>Analytics</a>
+      </nav>
+      <div class="sidebar-footer">© 2026 Portfolio Admin</div>
+    </aside>
+    <a class="sidebar-overlay sidebar-target-overlay" href="#" aria-label="Close menu"></a>
+    <div class="main-area">
+      <header class="navbar" id="navbar" data-page-title="Analytics">
+        <div class="navbar-left">
+          <a class="menu-toggle" id="menuToggle" href="#sidebar" aria-label="Toggle menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </a>
+          <h1 class="page-title">Analytics</h1>
+        </div>
+        <div class="navbar-right">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search..." id="globalSearch" />
+          </div>
+          <div class="admin-profile" id="adminProfile">
+            <div class="admin-avatar">IA</div>
+            <span class="admin-name">Ihsan A</span>
+          </div>
+        </div>
+      </header>
+      <main class="main-content">
+        <!-- Summary row -->
+        <div class="stats-grid analytics-summary-grid fade-in">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon" id="aIconAvg"><span class="stat-glyph">A</span></div>
+              <span class="stat-trend up">+5.2%</span>
+            </div>
+            <div class="stat-value" data-count="428">0</div>
+            <div class="stat-label">Avg. Daily Visitors</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon" id="aIconBounce"><span class="stat-glyph">B</span></div>
+              <span class="stat-trend down">-2.1%</span>
+            </div>
+            <div class="stat-value" data-count="38.4" data-suffix="%">0%</div>
+            <div class="stat-label">Bounce Rate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon" id="aIconPages"><span class="stat-glyph">P</span></div>
+              <span class="stat-trend up">+0.8</span>
+            </div>
+            <div class="stat-value" data-count="3.2">0</div>
+            <div class="stat-label">Pages / Session</div>
+          </div>
+        </div>
+
+        <!-- Full Line Chart -->
+        <div class="chart-card chart-card--spaced fade-in">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">Visitor Trends</div>
+              <div class="chart-card-subtitle">Daily visitors — 30-day window</div>
+            </div>
+          </div>
+          <div class="chart-wrap chart-wrap--large">
+            <canvas id="fullLineChart" height="300"></canvas>
+          </div>
+        </div>
+
+        <!-- Two-column: Donut + Country -->
+        <div class="charts-row fade-in">
+          <!-- Device Donut -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div>
+                <div class="chart-card-title">Device Distribution</div>
+                <div class="chart-card-subtitle">All-time breakdown</div>
+              </div>
+            </div>
+            <div class="chart-wrap chart-wrap--donut">
+              <canvas id="deviceDonut" height="260" width="260"></canvas>
+            </div>
+            <div id="donutLegend"></div>
+          </div>
+
+          <!-- Country Bar -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div>
+                <div class="chart-card-title">Top Countries</div>
+                <div class="chart-card-subtitle">Visitor origin</div>
+              </div>
+            </div>
+            <div class="chart-wrap chart-wrap--bar">
+              <canvas id="countryBar" height="280"></canvas>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module" src="analytics.js"></script>
+</body>
+</html>

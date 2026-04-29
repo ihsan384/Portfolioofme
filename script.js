@@ -2,12 +2,20 @@
  * Premium Portfolio - GSAP Animations, Particles, Interactivity
  * Ultra-premium award-winning portfolio experience
  */
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient(
+  'https://jjhhwabwdujwmobfkidd.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqaGh3YWJ3ZHVqd21vYmZraWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczODIwMzIsImV4cCI6MjA5Mjk1ODAzMn0.py1kpbzOqHvXxwtb8-7-7TIwAn8Sb71NjUSMI3ADD0g'
+)
 
 document.addEventListener("DOMContentLoaded", () => {
   // Register GSAP plugins
   if (typeof gsap !== "undefined" && gsap.registerPlugin) {
     gsap.registerPlugin(ScrollTrigger);
   }
+  
+
 
   initParticles();
   initGSAPAnimations();
@@ -22,7 +30,72 @@ document.addEventListener("DOMContentLoaded", () => {
   initLazyLoading();
   initSmoothScroll();
   initYear();
+  trackVisitor();
 });
+
+function getVisitorInfo() {
+  const ua = navigator.userAgent;
+
+  let device = "Desktop";
+  if (/mobile/i.test(ua)) device = "Mobile";
+  if (/tablet/i.test(ua)) device = "Tablet";
+
+  let browser = "Unknown";
+  if (ua.includes("Chrome")) browser = "Chrome";
+  else if (ua.includes("Firefox")) browser = "Firefox";
+  else if (ua.includes("Safari")) browser = "Safari";
+
+  return { device, browser };
+}
+
+async function trackVisitor() {
+  const { device, browser } = getVisitorInfo();
+
+  let location = {};
+  try {
+    location = await getLocationData();
+  } catch (e) {
+    console.warn("Location fetch failed");
+  }
+
+  const payload = {
+    device,
+    browser,
+    ip: location?.ip || null,
+    country: location?.country || null,
+    state: location?.state || null,
+    city: location?.city || null,
+    visited_at: new Date().toISOString(),
+  };
+
+  console.log("SENDING:", payload);
+
+  const { data, error } = await supabase
+    .from("visitors")
+    .insert([payload]);
+
+  if (error) {
+    console.error("Visitor tracking FAILED:", error.message);
+  } else {
+    console.log("Visitor tracked SUCCESS:", data);
+  }
+}
+async function getLocationData() {
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+
+    return {
+      ip: data.ip,
+      country: data.country_name,
+      state: data.region,
+      city: data.city
+    };
+  } catch (err) {
+    console.error("Location fetch failed:", err);
+    return {};
+  }
+}
 
 /* ============================================
    Particle Background - Canvas
@@ -444,36 +517,49 @@ function initContactForm() {
 
     return isValid;
   };
+  form.addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
+  console.log("FORM SUBMIT TRIGGERED");
 
-    if (!validate()) return;
+  if (!validate()) return;
 
-    submitBtn.classList.add("sending");
-    submitBtn.disabled = true;
+  submitBtn.classList.add("sending");
+  submitBtn.disabled = true;
 
-    emailjs.sendForm("service_2whqhpi", "template_0bej7iq", form).then(
-      () => {
-        submitBtn.classList.remove("sending");
-        submitBtn.disabled = false;
+  const name = nameInput.value;
+  const email = emailInput.value;
+  const message = messageInput.value;
 
-        const name = nameInput.value;
-        const message = messageInput.value;
+  const { data, error } = await supabase
+    .from("messages")
+    .insert([
+      {
+        name: name,
+        email: email,
+        message: message,
+        device: navigator.userAgent,
+      }
+    ]);
 
-        form.reset();
-        alert(`Thank you, ${name}! Your message has been sent successfully.`);
-      },
-      (error) => {
-        submitBtn.classList.remove("sending");
-        submitBtn.disabled = false;
-        alert(
-          "An error occurred while sending your message. Please try again later.",
-        );
-      },
-    );
-  });
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
+
+  if (error) {
+    alert("Error saving message ❌");
+  } else {
+    alert("Message stored successfully ✅");
+    form.reset();
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.classList.remove("sending");
+});
 }
+
+
+ 
+  
 
 /* ============================================
    Cursor Glow Effect

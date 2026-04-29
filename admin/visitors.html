@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Visitor tracking and analytics table" />
+  <title>Visitors — Portfolio Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="sidebar-logo">
+          <div class="logo-icon">P</div>
+          <span>Portfolio Admin</span>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item" id="nav-dashboard"><span class="nav-glyph">D</span>Dashboard</a>
+        <a href="visitors.html" class="nav-item active" id="nav-visitors"><span class="nav-glyph">V</span>Visitors</a>
+        <a href="messages.html" class="nav-item" id="nav-messages"><span class="nav-glyph">M</span>Messages</a>
+        <a href="analytics.html" class="nav-item" id="nav-analytics"><span class="nav-glyph">A</span>Analytics</a>
+      </nav>
+      <div class="sidebar-footer">© 2026 Portfolio Admin</div>
+    </aside>
+    <a class="sidebar-overlay sidebar-target-overlay" href="#" aria-label="Close menu"></a>
+    <div class="main-area">
+      <header class="navbar" id="navbar" data-page-title="Visitors">
+        <div class="navbar-left">
+          <a class="menu-toggle" id="menuToggle" href="#sidebar" aria-label="Toggle menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </a>
+          <h1 class="page-title">Visitors</h1>
+        </div>
+        <div class="navbar-right">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search..." id="globalSearch" />
+          </div>
+          <div class="admin-profile" id="adminProfile">
+            <div class="admin-avatar">IA</div>
+            <span class="admin-name">Ihsan A</span>
+          </div>
+        </div>
+      </header>
+      <main class="main-content">
+        <div class="section-header fade-in">
+          <h2 class="section-title">All Visitors</h2>
+        </div>
+
+        <div class="table-card fade-in">
+          <div class="table-card-header">
+            <div class="table-card-title">Visitor Log</div>
+            <div class="table-card-count" id="tableCount"></div>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" id="visitorsFullTable">
+              <thead>
+                <tr>
+                  <th data-sort="device">Device <span class="sort-icon">▲</span></th>
+                  <th data-sort="browser">Browser <span class="sort-icon">▲</span></th>
+                  <th data-sort="country">Country <span class="sort-icon">▲</span></th>
+                  <th data-sort="state">State <span class="sort-icon">▲</span></th>
+                  <th data-sort="city">City <span class="sort-icon">▲</span></th>
+                  <th data-sort="time">Time <span class="sort-icon">▲</span></th>
+                </tr>
+              </thead>
+              <tbody id="visitorsTableBody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <div class="table-info" id="tableInfo">Showing 1–20 of 20 visitors</div>
+            <div class="table-pagination" id="tablePagination">
+              <button class="active">1</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="visitors.js"></script>
+</body>
+</html>

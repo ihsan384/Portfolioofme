@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Admin login" />
+  <title>Admin — Login</title>
+  <link rel="stylesheet" href="admin.css" />
+  <style>
+    /* Specific overrides for the login screen centering */
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: var(--space-4);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      padding: var(--space-8);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      background: var(--bg-panel);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+
+    .login-logo {
+      display: inline-grid;
+      width: 48px;
+      height: 48px;
+      place-items: center;
+      border-radius: var(--radius-md);
+      background: var(--gradient-accent);
+      color: #fff;
+      margin-bottom: var(--space-4);
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: var(--space-2);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Styling the inputs to match the admin search box style */
+    .login-card input {
+      width: 100%;
+      height: 46px;
+      padding: 0 var(--space-4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      background: var(--bg-input);
+      transition: all 0.2s var(--ease);
+    }
+
+    .login-card input:focus {
+      border-color: var(--accent-light);
+      background: rgba(255, 255, 255, 0.08);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    }
+
+    .btn-login {
+      width: 100%;
+      height: 46px;
+      margin-top: var(--space-4);
+      border-radius: var(--radius-md);
+      background: var(--gradient-accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    }
+
+    .btn-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body class="fade-in">
+  
+  <main class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <h1 class="section-title">Welcome Back</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">Enter your credentials to access the panel</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="admin@example.com" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" class="btn-login">
+          Sign In
+        </button>
+      </form>
+      
+      <div style="margin-top: 24px; text-align: center;">
+        <a href="#" style="color: var(--text-accent); font-size: 0.8rem; font-weight: 600;">Forgot password?</a>
+      </div>
+    </div>
+  </main>
+ 
+  <script type="module" src="index.js"></script>
+</body>
+</html>
