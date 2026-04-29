@@ -24,7 +24,8 @@ export const icons = {
 };
 
 // ─── Sidebar + Navbar Injection ───
-export function buildShell(activePage) {
+const ADMIN_EMAIL = "ihsan.anas8281@gmail.com";
+export async function buildShell(activePage) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: icons.dashboard, href: 'dashboard.html' },
     { id: 'visitors', label: 'Visitors', icon: icons.visitors, href: 'visitors.html' },
@@ -70,36 +71,112 @@ export function buildShell(activePage) {
         ${icons.search}
         <input type="text" placeholder="Search..." id="globalSearch" />
       </div>
-      <div class="admin-profile" id="adminProfile">
-        <div class="admin-avatar">IA</div>
-        <span class="admin-name">Ihsan A</span>
+      <div class="admin-profile-dropdown" id="adminProfile">
+        <button class="admin-profile admin-profile-trigger" id="profileTrigger" type="button" aria-haspopup="true" aria-expanded="false">
+          <div class="admin-avatar">IA</div>
+          <span class="admin-name">Ihsan A</span>
+        </button>
+        <div class="profile-dropdown hidden" id="profileDropdown" role="menu" aria-label="Profile menu">
+          <div class="profile-email" id="profileEmail">Loading...</div>
+          <button class="btn-sm btn-ghost profile-logout" id="logoutButton" type="button">Logout</button>
+        </div>
       </div>
     </div>
   `;
 
-  // Overlay
   const overlay = document.createElement('div');
   overlay.className = 'sidebar-overlay';
   overlay.id = 'sidebarOverlay';
   document.body.appendChild(overlay);
 
-  // Mobile toggle
   const toggle = document.getElementById('menuToggle');
   toggle.addEventListener('click', () => {
     sidebar.classList.toggle('open');
     overlay.classList.toggle('active');
   });
+
   window.addEventListener('resize', () => {
-  if (window.innerWidth > 1024) {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('active');
-  }
-});
+    if (window.innerWidth > 1024) {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    }
+  });
+
   overlay.addEventListener('click', () => {
     sidebar.classList.remove('open');
     overlay.classList.remove('active');
   });
+
+  const profileTrigger = document.getElementById('profileTrigger');
+  const profileDropdown = document.getElementById('profileDropdown');
+  const profileEmail = document.getElementById('profileEmail');
+  const logoutButton = document.getElementById('logoutButton');
+
+  async function loadProfile() {
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Load profile failed:', error);
+        profileEmail.textContent = 'Unable to load user';
+        return;
+      }
+      const userEmail = data?.user?.email || 'No email';
+      profileEmail.textContent = userEmail;
+      profileTrigger.setAttribute('aria-label', `Profile menu for ${userEmail}`);
+    } catch (error) {
+      console.error('Profile fetch failed:', error);
+      profileEmail.textContent = 'Unable to load user';
+    }
+  }
+
+  function closeDropdown() {
+    profileDropdown.classList.add('hidden');
+    profileDropdown.classList.remove('visible');
+    profileTrigger.setAttribute('aria-expanded', 'false');
+  }
+
+  function openDropdown() {
+    profileDropdown.classList.remove('hidden');
+    profileDropdown.classList.add('visible');
+    profileTrigger.setAttribute('aria-expanded', 'true');
+  }
+
+  function toggleDropdown() {
+    if (profileDropdown.classList.contains('hidden')) {
+      openDropdown();
+    } else {
+      closeDropdown();
+    }
+  }
+
+  async function signOut() {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      window.location.href = '/admin/index.html';
+    }
+  }
+
+  profileTrigger.addEventListener('click', event => {
+    event.stopPropagation();
+    toggleDropdown();
+  });
+
+  logoutButton.addEventListener('click', async () => {
+    await signOut();
+  });
+
+  document.addEventListener('click', event => {
+    if (!profileDropdown.contains(event.target) && !profileTrigger.contains(event.target)) {
+      closeDropdown();
+    }
+  });
+
+  await loadProfile();
 }
+
 
 // ─── Number Counter Animation ───
 export function animateCount(el, target, duration = 1200) {
@@ -312,9 +389,41 @@ export function subscribeMessages(callback) {
     .subscribe();
 }
 export async function requireAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      console.error('Require auth session error:', sessionError);
+    }
 
-  if (!session) {
-    window.location.href = '/admin/index.html'; // ✅ FIX
+    const session = sessionData?.session;
+    if (!session) {
+      await supabase.auth.signOut();
+      window.location.href = '/admin/index.html';
+      return null;
+    }
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      console.error('Require auth user error:', userError);
+      await supabase.auth.signOut();
+      window.location.href = '/admin/index.html';
+      return null;
+    }
+
+    const user = userData?.user;
+    const email = user?.email;
+    if (!email || email !== ADMIN_EMAIL) {
+      await supabase.auth.signOut();
+      alert('Access denied');
+      window.location.href = '/admin/index.html';
+      return null;
+    }
+
+    return user;
+  } catch (error) {
+    console.error('Require auth failed:', error);
+    await supabase.auth.signOut();
+    window.location.href = '/admin/index.html';
+    return null;
   }
 }

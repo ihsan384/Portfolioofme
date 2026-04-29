@@ -1,16 +1,14 @@
 /* ══════════════════════════════════════════
    Visitors Page — Sortable Table
    ══════════════════════════════════════════ */
-import { requireAuth } from './admin.js';
+import { buildShell, fetchVisitors, requireAuth } from './admin.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await requireAuth();
-});
-   import { buildShell, fetchVisitors } from './admin.js';
-document.addEventListener('DOMContentLoaded', () => {
-  buildShell('visitors');
+  try {
+    await requireAuth();
+    await buildShell('visitors');
 
-  let data = [];
+    let data = [];
 
     async function init() {
       data = await fetchVisitors();
@@ -75,7 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initial render
   render(data);
+  } catch (error) {
+    console.error('Visitors page initialization failed:', error);
+  }
 });
+
 function formatTime(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);

@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Auth check failed:', error);
   }
 
-  buildShell('analytics');
+  await buildShell('analytics');
   configChartDefaults();
 
   const donutLegendEl = document.getElementById('donutLegend');

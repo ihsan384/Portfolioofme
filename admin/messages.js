@@ -1,31 +1,29 @@
 /* ══════════════════════════════════════════
    Messages Page — Realtime Inbox
    ══════════════════════════════════════════ */
-import { requireAuth } from './admin.js';
-
-document.addEventListener('DOMContentLoaded', async () => {
-  await requireAuth();
-});
-   import {
+import {
   buildShell,
   fetchMessages,
   formatTime,
   subscribeMessages,
   supabase,
+  requireAuth,
 } from './admin.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  buildShell('messages');
+  try {
+    await requireAuth();
+    await buildShell('messages');
 
-  const grid = document.getElementById('messagesGrid');
-  const unreadCountEl = document.getElementById('unreadCount');
+    const grid = document.getElementById('messagesGrid');
+    const unreadCountEl = document.getElementById('unreadCount');
 
-  let messages = [];
-  let isLoading = false;
-  let pendingReload = false;
+    let messages = [];
+    let isLoading = false;
+    let pendingReload = false;
 
-  function isUnread(message) {
-    return message?.is_read !== true;
+    function isUnread(message) {
+      return message?.is_read !== true;
   }
 
   function getMessageTime(message) {
@@ -155,5 +153,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   } catch (error) {
     console.error('Messages inbox initialization failed:', error);
+  }
+  } catch (error) {
+    console.error('Messages page initialization failed:', error);
   }
 });
