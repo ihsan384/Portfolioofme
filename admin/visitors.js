@@ -79,12 +79,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function formatTime(dateStr) {
-  const diff = Date.now() - new Date(dateStr).getTime();
+  if (!dateStr) return 'Unknown';
+
+  const date = new Date(dateStr);
+  const now = new Date();
+
+  const diff = now - date;
   const mins = Math.floor(diff / 60000);
+  const hrs = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
 
   if (mins < 60) return `${mins} min ago`;
-  const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `${hrs} hr ago`;
 
-  return `${Math.floor(hrs / 24)} day ago`;
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return `${days} days ago`;
+
+  return date.toLocaleDateString('en-IN');
 }
+const res = await fetch('https://ipapi.co/json/');
+const data = await res.json();
+
+country = data.country_name;
+state = data.region;
+city = data.city;

@@ -1,160 +1,242 @@
-/* ══════════════════════════════════════════
-   Messages Page — Realtime Inbox
-   ══════════════════════════════════════════ */
 import {
   buildShell,
   fetchMessages,
-  formatTime,
   subscribeMessages,
   supabase,
   requireAuth,
 } from './admin.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    await requireAuth();
-    await buildShell('messages');
+let messages = [];
+let grid, unreadCountEl;
 
-    const grid = document.getElementById('messagesGrid');
-    const unreadCountEl = document.getElementById('unreadCount');
+/* =========================
+   TIME FORMAT
+========================= */
+function formatFullTime(dateStr) {
+  if (!dateStr) return 'Unknown time';
 
-    let messages = [];
-    let isLoading = false;
-    let pendingReload = false;
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return 'Unknown time';
 
-    function isUnread(message) {
-      return message?.is_read !== true;
-  }
+  const exact = date.toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
 
-  function getMessageTime(message) {
-    if (!message?.created_at) return 'Unknown time';
-    return formatTime(message.created_at);
-  }
+  const diff = Date.now() - date.getTime();
+  const mins = Math.max(0, Math.floor(diff / 60000));
 
-  function updateUnreadCount() {
-    const unreadCount = messages.filter(isUnread).length;
-    unreadCountEl.textContent = `${unreadCount} unread`;
-  }
+  let relative = '';
+  if (mins < 60) relative = `${mins} min ago`;
+  else if (mins < 1440) relative = `${Math.floor(mins / 60)} hr ago`;
+  else relative = `${Math.floor(mins / 1440)} day ago`;
 
-  function renderEmptyState() {
+  return `${exact} • ${relative}`;
+}
+
+function isUnread(m) {
+  return m?.is_read !== true;
+}
+
+/* =========================
+   RENDER
+========================= */
+function renderMessages() {
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  if (!messages.length) {
     grid.innerHTML = `
       <div class="message-empty-state">
-        <div class="message-empty-title">No messages yet</div>
-        <div class="message-empty-copy">New leads will appear here — messages will arrive in real time.</div>
+        <div class="message-empty-title">No messages</div>
+        <div class="message-empty-copy">New leads will appear here</div>
       </div>
     `;
+    return;
   }
 
-  function renderMessages() {
-    grid.innerHTML = '';
+  // ✅ ALWAYS SORT FIRST
+  const sorted = [...messages].sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
 
-    if (!messages.length) {
-      renderEmptyState();
-      updateUnreadCount();
-      return;
-    }
+  sorted.forEach(msg => {
+    const card = document.createElement('div');
 
-    messages.forEach(message => {
-      const card = document.createElement('article');
-      const sender = document.createElement('div');
-      const meta = document.createElement('div');
-      const preview = document.createElement('div');
-      const actions = document.createElement('div');
-      const readButton = document.createElement('button');
+    // ✅ IMPORTANT: unread/read class
+    card.className = `message-card ${isUnread(msg) ? 'unread' : 'read'}`;
 
-      card.className = `message-card ${isUnread(message) ? 'unread' : 'read'}`;
+    card.innerHTML = `
+      <div class="message-body">
 
-      sender.className = 'message-sender';
-      sender.textContent = message.name || 'Unknown sender';
+        <div class="message-top">
+          <div class="message-sender">
+            ${msg.name || 'Unknown'}
+          </div>
+          <div class="message-time">
+            ${formatFullTime(msg.created_at)}
+          </div>
+        </div>
 
-      meta.className = 'message-meta';
-      meta.textContent = `${message.email || 'No email'} · ${getMessageTime(message)}`;
+        <div class="message-meta">
+          ${msg.email || 'No email'}
+        </div>
 
-      preview.className = 'message-preview';
-      preview.textContent = message.message || '';
+        <div class="message-preview">
+          ${msg.message || ''}
+        </div>
 
-      actions.className = 'message-actions';
+      </div>
 
-      readButton.type = 'button';
-      readButton.className = `btn-sm ${isUnread(message) ? 'btn-accent' : 'btn-ghost'}`;
-      readButton.textContent = isUnread(message) ? 'Mark as read' : 'Read';
-      readButton.disabled = !isUnread(message);
-      readButton.addEventListener('click', () => markAsRead(message.id));
+      <div class="message-actions">
 
-      actions.appendChild(readButton);
-      card.append(sender, meta, preview, actions);
-      grid.appendChild(card);
-    });
+        <button class="btn-sm btn-accent"
+          ${!isUnread(msg) ? 'disabled' : ''}
+          onclick="markAsRead(${msg.id})">
+          ${isUnread(msg) ? 'Mark read' : 'Read'}
+        </button>
 
-    updateUnreadCount();
+        <button class="btn-sm btn-ghost"
+          onclick="deleteMessage(${msg.id})">
+          Delete
+        </button>
+
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  updateUnread();
+}
+
+/* =========================
+   LOAD
+========================= */
+async function loadMessages() {
+  const data = await fetchMessages();
+  messages = Array.isArray(data) ? data : [];
+  renderMessages();
+}
+
+/* =========================
+   UPDATE
+========================= */
+async function markAsRead(id) {
+  const { error } = await supabase
+    .from('messages')
+    .update({ is_read: true })
+    .eq('id', id);
+
+  if (error) {
+    console.error(error);
+    alert("Failed to mark as read");
+    return;
   }
 
-  async function loadMessages() {
-    if (isLoading) {
-      pendingReload = true;
-      return;
-    }
+  // 🔥 FORCE reload from DB (important)
+  await loadMessages();
+}
 
-    isLoading = true;
+/* =========================
+   DELETE
+========================= */
+async function deleteMessage(id) {
+  if (!confirm("Delete message?")) return;
 
-    try {
-      const data = await fetchMessages();
+  const { error } = await supabase
+    .from('messages')
+    .delete()
+    .eq('id', id);
 
-      messages = Array.isArray(data)
-        ? data.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
-        : [];
+  if (error) {
+    console.error(error);
+    return;
+  }
 
+  // 🔥 remove locally
+  messages = messages.filter(m => m.id !== id);
+
+  renderMessages();
+}
+
+/* =========================
+   CSV EXPORT
+========================= */
+function exportCSV() {
+  if (!messages.length) {
+    alert("No messages");
+    return;
+  }
+
+  const headers = ['Name', 'Email', 'Message', 'Date'];
+
+  const rows = messages.map(m => [
+    m.name || '',
+    m.email || '',
+    m.message || '',
+    formatFullTime(m.created_at)
+  ]);
+
+  let csv = headers.join(',') + '\n';
+
+  rows.forEach(row => {
+    csv += row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',') + '\n';
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'messages.csv';
+  a.click();
+}
+
+/* =========================
+   UNREAD COUNT
+========================= */
+function updateUnread() {
+  if (!unreadCountEl) return;
+  unreadCountEl.textContent =
+    messages.filter(m => !m.is_read).length + ' unread';
+}
+
+/* =========================
+   INIT
+========================= */
+document.addEventListener('DOMContentLoaded', async () => {
+  await requireAuth();
+  await buildShell('messages');
+
+  grid = document.getElementById('messagesGrid');
+  unreadCountEl = document.getElementById('unreadCount');
+
+  document.getElementById('exportCSV')?.addEventListener('click', exportCSV);
+
+  await loadMessages();
+
+  // 🔥 REALTIME FIX (NO DUPLICATES)
+  subscribeMessages(payload => {
+    if (payload.eventType === 'INSERT') {
+
+      const exists = messages.some(m => m.id === payload.new.id);
+      if (exists) return;
+
+      messages = [payload.new, ...messages];
       renderMessages();
-    } catch (error) {
-      console.error('Load messages failed:', error);
-      messages = [];
-      renderMessages();
-    } finally {
-      isLoading = false;
 
-      if (pendingReload) {
-        pendingReload = false;
-        await loadMessages();
-      }
+    } else {
+      loadMessages();
     }
-  }
-
-  async function markAsRead(id) {
-    if (!id) return;
-
-    try {
-      const { error } = await supabase
-        .from('messages')
-        .update({ is_read: true })
-        .eq('id', id);
-
-      if (error) {
-        console.error('Mark message as read error:', error);
-        return;
-      }
-
-      messages = messages.map(message =>
-        String(message.id) === String(id)
-          ? { ...message, is_read: true }
-          : message
-      );
-
-      renderMessages();
-    } catch (error) {
-      console.error('Mark message as read failed:', error);
-    }
-  }
-
-  try {
-    await loadMessages();
-
-    subscribeMessages(async () => {
-      await loadMessages();
-    });
-  } catch (error) {
-    console.error('Messages inbox initialization failed:', error);
-  }
-  } catch (error) {
-    console.error('Messages page initialization failed:', error);
-  }
+  });
+  window.markAsRead = markAsRead;
+window.deleteMessage = deleteMessage;
+setInterval(() => {
+  renderMessages();
+}, 30000); // every 1 min
 });

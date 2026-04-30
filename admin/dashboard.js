@@ -44,7 +44,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const totalMessages = messages.length;
 
-    const conversionRate = ((totalMessages / totalVisitors) * 100).toFixed(2);
+    const conversionRate = totalVisitors > 0
+  ? ((totalMessages / totalVisitors) * 100).toFixed(2)
+  : 0;
 
     document.getElementById('totalVisitors').textContent = totalVisitors;
     document.getElementById('todayVisitors').textContent = todayVisitors;
