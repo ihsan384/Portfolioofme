@@ -31,7 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
   initSmoothScroll();
   initYear();
   trackVisitor();
+  trackEvent({
+  type: "page_load",
+  section: "hero"
 });
+});
+
 
 function getVisitorInfo() {
   const ua = navigator.userAgent;
