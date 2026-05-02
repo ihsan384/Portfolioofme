@@ -456,22 +456,20 @@ function initCounters() {
 
 /* ============================================
    Contact Form - Validation & Submit
-   ============================================ */
-function initContactForm() {
+    ============================================ */
+    function initContactForm() {
   const form = document.getElementById("contact-form");
   if (!form) return;
 
   const nameInput = document.getElementById("name");
-  const emailInput = document.getElementById("email");
+  const phoneInput = document.getElementById("phone"); // Added phone
   const messageInput = document.getElementById("message");
+  
   const nameError = document.getElementById("nameError");
-  const emailError = document.getElementById("emailError");
+  const phoneError = document.getElementById("phoneError"); // Added error el
   const messageError = document.getElementById("messageError");
+  
   const submitBtn = form.querySelector('button[type="submit"]');
-
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
 
   const showError = (input, errorEl, message) => {
     input.closest(".form-group").classList.add("invalid");
@@ -483,9 +481,15 @@ function initContactForm() {
     errorEl.textContent = "";
   };
 
+  const validatePhone = (phone) => {
+    return /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(phone);
+  };
+
+  // Single validation function
   const validate = () => {
     let isValid = true;
 
+    // Name Check
     if (!nameInput.value.trim()) {
       showError(nameInput, nameError, "Name is required");
       isValid = false;
@@ -493,25 +497,20 @@ function initContactForm() {
       clearError(nameInput, nameError);
     }
 
-    if (!emailInput.value.trim()) {
-      showError(emailInput, emailError, "Email is required");
+    // Phone Check
+    if (!phoneInput.value.trim()) {
+      showError(phoneInput, phoneError, "Phone number is required");
       isValid = false;
-    } else if (!validateEmail(emailInput.value)) {
-      showError(emailInput, emailError, "Please enter a valid email");
+    } else if (!validatePhone(phoneInput.value)) {
+      showError(phoneInput, phoneError, "Enter a valid phone number");
       isValid = false;
     } else {
-      clearError(emailInput, emailError);
+      clearError(phoneInput, phoneError);
     }
 
+    // Message Check
     if (!messageInput.value.trim()) {
       showError(messageInput, messageError, "Message is required");
-      isValid = false;
-    } else if (messageInput.value.trim().length < 10) {
-      showError(
-        messageInput,
-        messageError,
-        "Message must be at least 10 characters",
-      );
       isValid = false;
     } else {
       clearError(messageInput, messageError);
@@ -519,44 +518,38 @@ function initContactForm() {
 
     return isValid;
   };
+
   form.addEventListener("submit", async function (e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  console.log("FORM SUBMIT TRIGGERED");
+    if (!validate()) return;
 
-  if (!validate()) return;
+    submitBtn.classList.add("sending");
+    submitBtn.disabled = true;
 
-  submitBtn.classList.add("sending");
-  submitBtn.disabled = true;
+    // Capture values inside the event listener
+    const payload = {
+      name: nameInput.value,
+      phone: phoneInput.value,
+      message: messageInput.value,
+      device: navigator.userAgent,
+    };
 
-  const name = nameInput.value;
-  const email = emailInput.value;
-  const message = messageInput.value;
+    const { data, error } = await supabase
+      .from("messages")
+      .insert([payload]);
 
-  const { data, error } = await supabase
-    .from("messages")
-    .insert([
-      {
-        name: name,
-        email: email,
-        message: message,
-        device: navigator.userAgent,
-      }
-    ]);
+    if (error) {
+      console.error("Supabase Error:", error);
+      alert("Error saving message ❌");
+    } else {
+      alert("Message stored successfully ✅");
+      form.reset();
+    }
 
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
-
-  if (error) {
-    alert("Error saving message ❌");
-  } else {
-    alert("Message stored successfully ✅");
-    form.reset();
-  }
-
-  submitBtn.disabled = false;
-  submitBtn.classList.remove("sending");
-});
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("sending");
+  });
 }
 
 
