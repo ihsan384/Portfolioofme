@@ -85,25 +85,21 @@ console.log("LOCATION DATA:", location);
 }
 async function getLocationData() {
   try {
-    const res = await fetch("https://ipapi.co/json/");
-
-    if (!res.ok) {
-      throw new Error("API blocked or rate limited");
-    }
+    const res = await fetch("https://ipwho.is/");
 
     const data = await res.json();
 
-    console.log("API RESPONSE:", data);
+    if (!data.success) throw new Error("API failed");
 
     return {
-      ip: data.ip || null,
-      country: data.country_name || "Unknown",
-      state: data.region || "Unknown",
-      city: data.city || "Unknown"
+      ip: data.ip,
+      country: data.country,
+      state: data.region,
+      city: data.city
     };
 
   } catch (err) {
-    console.error("❌ Location fetch failed:", err);
+    console.error("Location fetch failed:", err);
 
     return {
       ip: null,
@@ -113,7 +109,6 @@ async function getLocationData() {
     };
   }
 }
-
 /* ============================================
    Particle Background - Canvas
    ============================================ */
