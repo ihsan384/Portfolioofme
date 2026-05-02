@@ -767,3 +767,10 @@ document.getElementById('logo').addEventListener('click', () => {
     clickCount = 0;
   }, 800);
 });
+async function testAPI() {
+  const res = await fetch("/api/generate-reply");
+  const data = await res.json();
+  console.log(data);
+}
+
+testAPI();
