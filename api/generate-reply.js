@@ -47,10 +47,24 @@ ${message}
 
     const data = await response.json();
 
-    const reply =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+console.log("FULL GEMINI RESPONSE:", JSON.stringify(data, null, 2));
 
-    res.status(200).json({ reply });
+let reply = "No response";
+
+// Try safe extraction
+if (data.candidates && data.candidates.length > 0) {
+  const parts = data.candidates[0].content?.parts;
+  if (parts && parts.length > 0) {
+    reply = parts.map(p => p.text).join("\n");
+  }
+}
+
+// Handle API errors
+if (data.error) {
+  reply = "API Error: " + data.error.message;
+}
+
+res.status(200).json({ reply });
 
   } catch (error) {
     console.error(error);
