@@ -456,20 +456,22 @@ function initCounters() {
 
 /* ============================================
    Contact Form - Validation & Submit
-    ============================================ */
-    function initContactForm() {
+   ============================================ */
+function initContactForm() {
   const form = document.getElementById("contact-form");
   if (!form) return;
 
   const nameInput = document.getElementById("name");
-  const phoneInput = document.getElementById("phone"); // Added phone
+  const emailInput = document.getElementById("email");
   const messageInput = document.getElementById("message");
-  
   const nameError = document.getElementById("nameError");
-  const phoneError = document.getElementById("phoneError"); // Added error el
+  const emailError = document.getElementById("emailError");
   const messageError = document.getElementById("messageError");
-  
   const submitBtn = form.querySelector('button[type="submit"]');
+
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   const showError = (input, errorEl, message) => {
     input.closest(".form-group").classList.add("invalid");
@@ -481,15 +483,9 @@ function initCounters() {
     errorEl.textContent = "";
   };
 
-  const validatePhone = (phone) => {
-    return /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(phone);
-  };
-
-  // Single validation function
   const validate = () => {
     let isValid = true;
 
-    // Name Check
     if (!nameInput.value.trim()) {
       showError(nameInput, nameError, "Name is required");
       isValid = false;
@@ -497,20 +493,25 @@ function initCounters() {
       clearError(nameInput, nameError);
     }
 
-    // Phone Check
-    if (!phoneInput.value.trim()) {
-      showError(phoneInput, phoneError, "Phone number is required");
+    if (!emailInput.value.trim()) {
+      showError(emailInput, emailError, "Email is required");
       isValid = false;
-    } else if (!validatePhone(phoneInput.value)) {
-      showError(phoneInput, phoneError, "Enter a valid phone number");
+    } else if (!validateEmail(emailInput.value)) {
+      showError(emailInput, emailError, "Please enter a valid email");
       isValid = false;
     } else {
-      clearError(phoneInput, phoneError);
+      clearError(emailInput, emailError);
     }
 
-    // Message Check
     if (!messageInput.value.trim()) {
       showError(messageInput, messageError, "Message is required");
+      isValid = false;
+    } else if (messageInput.value.trim().length < 10) {
+      showError(
+        messageInput,
+        messageError,
+        "Message must be at least 10 characters",
+      );
       isValid = false;
     } else {
       clearError(messageInput, messageError);
@@ -518,38 +519,44 @@ function initCounters() {
 
     return isValid;
   };
-
   form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!validate()) return;
+  console.log("FORM SUBMIT TRIGGERED");
 
-    submitBtn.classList.add("sending");
-    submitBtn.disabled = true;
+  if (!validate()) return;
 
-    // Capture values inside the event listener
-    const payload = {
-      name: nameInput.value,
-      phone: phoneInput.value,
-      message: messageInput.value,
-      device: navigator.userAgent,
-    };
+  submitBtn.classList.add("sending");
+  submitBtn.disabled = true;
 
-    const { data, error } = await supabase
-      .from("messages")
-      .insert([payload]);
+  const name = nameInput.value;
+  const email = emailInput.value;
+  const message = messageInput.value;
 
-    if (error) {
-      console.error("Supabase Error:", error);
-      alert("Error saving message ❌");
-    } else {
-      alert("Message stored successfully ✅");
-      form.reset();
-    }
+  const { data, error } = await supabase
+    .from("messages")
+    .insert([
+      {
+        name: name,
+        email: email,
+        message: message,
+        device: navigator.userAgent,
+      }
+    ]);
 
-    submitBtn.disabled = false;
-    submitBtn.classList.remove("sending");
-  });
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
+
+  if (error) {
+    alert("Error saving message ❌");
+  } else {
+    alert("Message stored successfully ✅");
+    form.reset();
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.classList.remove("sending");
+});
 }
 
 
@@ -757,10 +764,20 @@ document.getElementById('logo').addEventListener('click', () => {
     clickCount = 0;
   }, 800);
 });
-async function testAPI() {
-  const res = await fetch("/api/generate-reply");
-  const data = await res.json();
-  console.log(data);
-}
 
-testAPI();
+
+async function generateReply(message) {
+  const res = await fetch("/api/generate-reply", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ message }),
+  });
+
+  const data = await res.json();
+  console.log("AI RESPONSE:", data);
+
+  return data.reply;
+}
+window.generateReply = generateReply;
