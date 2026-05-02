@@ -780,3 +780,4 @@ async function generateReply(message) {
 
   return data.reply;
 }
+window.generateReply = generateReply;
