@@ -31,7 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initSmoothScroll();
   initYear();
   trackVisitor();
-  
+  trackEvent({
+  type: "page_load",
+  section: "hero"
+});
 });
 
 
@@ -56,7 +59,6 @@ async function trackVisitor() {
   let location = {};
   try {
     location = await getLocationData();
-console.log("LOCATION DATA:", location);
   } catch (e) {
     console.warn("Location fetch failed");
   }
@@ -85,30 +87,21 @@ console.log("LOCATION DATA:", location);
 }
 async function getLocationData() {
   try {
-    const res = await fetch("https://ipwho.is/");
-
+    const res = await fetch("https://ipapi.co/json/");
     const data = await res.json();
-
-    if (!data.success) throw new Error("API failed");
 
     return {
       ip: data.ip,
-      country: data.country,
+      country: data.country_name,
       state: data.region,
       city: data.city
     };
-
   } catch (err) {
     console.error("Location fetch failed:", err);
-
-    return {
-      ip: null,
-      country: "Unknown",
-      state: "Unknown",
-      city: "Unknown"
-    };
+    return {};
   }
 }
+
 /* ============================================
    Particle Background - Canvas
    ============================================ */
@@ -774,20 +767,3 @@ document.getElementById('logo').addEventListener('click', () => {
     clickCount = 0;
   }, 800);
 });
-
-
-async function generateReply(message) {
-  const res = await fetch("/api/generate-reply", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ message }),
-  });
-
-  const data = await res.json();
-  console.log("AI RESPONSE:", data);
-
-  return data.reply;
-}
-window.generateReply = generateReply;
