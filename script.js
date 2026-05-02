@@ -764,20 +764,10 @@ document.getElementById('logo').addEventListener('click', () => {
     clickCount = 0;
   }, 800);
 });
-
-
-async function generateReply(message) {
-  const res = await fetch("/api/generate-reply", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ message }),
-  });
-
+async function testAPI() {
+  const res = await fetch("/api/generate-reply");
   const data = await res.json();
-  console.log("AI RESPONSE:", data);
-
-  return data.reply;
+  console.log(data);
 }
-window.generateReply = generateReply;
+
+testAPI();
