@@ -56,6 +56,7 @@ async function trackVisitor() {
   let location = {};
   try {
     location = await getLocationData();
+console.log("LOCATION DATA:", location);
   } catch (e) {
     console.warn("Location fetch failed");
   }
@@ -85,17 +86,31 @@ async function trackVisitor() {
 async function getLocationData() {
   try {
     const res = await fetch("https://ipapi.co/json/");
+
+    if (!res.ok) {
+      throw new Error("API blocked or rate limited");
+    }
+
     const data = await res.json();
 
+    console.log("API RESPONSE:", data);
+
     return {
-      ip: data.ip,
-      country: data.country_name,
-      state: data.region,
-      city: data.city
+      ip: data.ip || null,
+      country: data.country_name || "Unknown",
+      state: data.region || "Unknown",
+      city: data.city || "Unknown"
     };
+
   } catch (err) {
-    console.error("Location fetch failed:", err);
-    return {};
+    console.error("❌ Location fetch failed:", err);
+
+    return {
+      ip: null,
+      country: "Unknown",
+      state: "Unknown",
+      city: "Unknown"
+    };
   }
 }
 
